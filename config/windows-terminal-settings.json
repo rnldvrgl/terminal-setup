@@ -128,7 +128,7 @@
         { "id": "User.restoreLastClosed", "keys": "ctrl+shift+t" },
         {
             "id": "User.quakeMode.F1E129A4",
-            "keys": "ctrl+`"
+            "keys": "ctrl+alt+t"
         }
     ],
     "newTabMenu": 
