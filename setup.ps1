@@ -121,14 +121,26 @@ if (-not $SkipApps) {
 }
 
 # ---------------------------------------------------------------- 2. fonts
-Write-Step 'Installing JetBrainsMono Nerd Font'
-Add-Type -AssemblyName System.Drawing
-$families = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
-if ($families -contains 'JetBrainsMono NFM') {
+# Installed system-wide, not just per-user: an elevated (admin) Windows Terminal cannot see
+# per-user fonts and shows "Unable to find the following fonts: JetBrainsMono NFM".
+Write-Step 'Installing JetBrainsMono Nerd Font (system-wide)'
+$userFonts = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+if (Test-Path "$env:WINDIR\Fonts\JetBrainsMonoNerdFontMono-Regular.ttf") {
     Write-Ok 'already installed'
 } else {
-    oh-my-posh font install JetBrainsMono
-    Write-Ok 'installed (use "JetBrainsMono NFM" in any app that needs icons)'
+    if (-not (Test-Path "$userFonts\JetBrainsMonoNerdFontMono-Regular.ttf")) {
+        oh-my-posh font install JetBrainsMono   # per-user download/install
+    }
+    Write-Host '    copying to C:\Windows\Fonts (approve the UAC prompt) ...'
+    $log = Join-Path $env:TEMP 'terminal-setup-fonts.log'
+    $helper = Join-Path $PSScriptRoot 'scripts\install-fonts-system.ps1'
+    $argList = "-NoProfile -ExecutionPolicy Bypass -File `"$helper`" -SourceDir `"$userFonts`" -Filter `"JetBrainsMono*NerdFont*`" -LogFile `"$log`""
+    try {
+        Start-Process powershell.exe -ArgumentList $argList -Verb RunAs -Wait
+        $bad = @(Get-Content $log -ErrorAction SilentlyContinue | Where-Object { $_ -like 'FAIL*' })
+        if (Test-Path "$env:WINDIR\Fonts\JetBrainsMonoNerdFontMono-Regular.ttf") { Write-Ok "installed ($($bad.Count) failures, see $log)" }
+        else { Write-Warn2 "system install failed, see $log"; $failed += 'JetBrainsMono font (system)' }
+    } catch { Write-Warn2 'UAC declined: font is per-user only, so an admin Terminal will not find it'; $failed += 'JetBrainsMono font (system)' }
 }
 
 # ---------------------------------------------------------------- 3. PowerShell modules
