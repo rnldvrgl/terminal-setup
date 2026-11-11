@@ -3,8 +3,8 @@ oh-my-posh init pwsh --config "$PSScriptRoot\forest.omp.json" | Invoke-Expressio
 
 Import-Module -Name Terminal-Icons # Icons when listing directories
 Import-Module -Name PSReadLine # typeahead predictions and whatnot
-Import-Module -Name PSFzf # Ctrl+T file search, Ctrl+R history search
-Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+Import-Module -Name PSFzf # Alt+T file search, Ctrl+R history search (Ctrl+T is Terminal's new tab)
+Set-PsFzfOption -PSReadlineChordProvider 'Alt+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 
 # Advanced completion features (arrow up and down after having started typing)
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd

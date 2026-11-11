@@ -1,0 +1,5 @@
+  "terminal.integrated.fontFamily": "JetBrainsMono NFM, JetBrains Mono, Geist Mono, monospace",
+  "terminal.integrated.fontSize": 16,
+  "terminal.integrated.lineHeight": 1.5,
+  "terminal.integrated.env.windows": {},
+  "terminal.integrated.defaultProfile.windows": "PowerShell",

@@ -25,6 +25,7 @@ $ErrorActionPreference = 'Continue'
 $failed = @()
 $ConfigDir = Join-Path $PSScriptRoot 'config'
 $TerminalSettings = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+$VSCodeSettings   = "$env:APPDATA\Code\User\settings.json"
 
 function Write-Step($msg) { Write-Host "`n==> $msg" -ForegroundColor Cyan }
 function Write-Ok($msg)   { Write-Host "    $msg" -ForegroundColor Green }
@@ -76,6 +77,11 @@ if ($Export) {
     if (Test-Path $TerminalSettings) {
         Copy-Item $TerminalSettings (Join-Path $ConfigDir 'windows-terminal-settings.json') -Force
         Write-Ok 'windows-terminal-settings.json'
+    }
+    if (Test-Path $VSCodeSettings) {
+        $lines = [IO.File]::ReadAllLines($VSCodeSettings) | Where-Object { $_ -match '^\s*"terminal\.integrated\.[^"]+"\s*:.*,?\s*$' }
+        [IO.File]::WriteAllLines((Join-Path $ConfigDir 'vscode-terminal-settings.jsonc'), [string[]]$lines)
+        Write-Ok "vscode-terminal-settings.jsonc ($(@($lines).Count) terminal.integrated.* keys)"
     }
     Write-Host "`nDone." -ForegroundColor Green
     return
@@ -149,6 +155,34 @@ foreach ($f in 'Microsoft.PowerShell_profile.ps1', 'profile.ps1', 'forest.omp.js
 
 Write-Step 'Applying Windows Terminal settings'
 Copy-WithBackup (Join-Path $ConfigDir 'windows-terminal-settings.json') $TerminalSettings
+
+Write-Step 'Applying VS Code terminal settings (only adds keys you do not already have)'
+$snippetFile = Join-Path $ConfigDir 'vscode-terminal-settings.jsonc'
+if (Test-Path $snippetFile) {
+    $snippet = [IO.File]::ReadAllLines($snippetFile) | Where-Object { $_.Trim() }
+    $utf8 = New-Object System.Text.UTF8Encoding($false)   # VS Code wants UTF-8 without BOM
+    if (-not (Test-Path $VSCodeSettings)) {
+        New-Item -ItemType Directory -Force (Split-Path $VSCodeSettings) | Out-Null
+        [IO.File]::WriteAllText($VSCodeSettings, "{`n" + ($snippet -join "`n") + "`n}`n", $utf8)
+        Write-Ok "created: $VSCodeSettings"
+    } else {
+        $text = [IO.File]::ReadAllText($VSCodeSettings)
+        $missing = @($snippet | Where-Object {
+            $key = [regex]::Match($_, '"([^"]+)"').Groups[1].Value
+            $text -notmatch [regex]::Escape("`"$key`"")
+        })
+        if ($missing.Count -eq 0) {
+            Write-Ok 'all terminal settings already present'
+        } else {
+            Copy-Item $VSCodeSettings "$VSCodeSettings.$(Get-Date -Format 'yyyyMMdd-HHmmss').bak"
+            # insert right after the opening brace; every line ends with a comma, which VS Code's JSONC allows
+            $insert = "`n  // added by terminal-setup`n" + (($missing | ForEach-Object { '  ' + $_.Trim().TrimEnd(',') + ',' }) -join "`n")
+            $text = $text.Insert($text.IndexOf('{') + 1, $insert)
+            [IO.File]::WriteAllText($VSCodeSettings, $text, $utf8)
+            Write-Ok "added $($missing.Count) setting(s) to $VSCodeSettings"
+        }
+    }
+} else { Write-Warn2 'no vscode-terminal-settings.jsonc in config, skipped' }
 
 # ---------------------------------------------------------------- 5. git
 Write-Step 'Configuring git'

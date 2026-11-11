@@ -9,17 +9,34 @@
                 "action": "quakeMode"
             },
             "id": "User.quakeMode.F1E129A4"
-        }
+        },
+        { "command": { "action": "restoreLastClosed" }, "id": "User.restoreLastClosed" },
+        { "command": { "action": "closeTab" }, "id": "User.closeTab" },
+        { "command": { "action": "nextTab", "tabSwitcherMode": "disabled" }, "id": "User.nextTab" },
+        { "command": { "action": "prevTab", "tabSwitcherMode": "disabled" }, "id": "User.prevTab" },
+        { "command": { "action": "newWindow" }, "id": "User.newWindow" },
+        { "command": "closePane", "id": "User.closePane" },
+        { "command": { "action": "splitPane", "split": "down", "splitMode": "duplicate" }, "id": "User.splitPane.down" },
+        { "command": { "action": "splitPane", "split": "right", "splitMode": "duplicate" }, "id": "User.splitPane.right" },
+        { "command": { "action": "splitPane", "split": "up", "splitMode": "duplicate" }, "id": "User.splitPane.up" },
+        { "command": { "action": "splitPane", "split": "left", "splitMode": "duplicate" }, "id": "User.splitPane.left" }
     ],
     "copyFormatting": "none",
     "copyOnSelect": true,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
     "keybindings": 
     [
-        {
-            "id": null,
-            "keys": "ctrl+tab"
-        },
+        { "id": "User.nextTab", "keys": "ctrl+tab" },
+        { "id": "User.prevTab", "keys": "ctrl+shift+tab" },
+        { "id": "User.closeTab", "keys": "ctrl+w" },
+        { "id": "User.newWindow", "keys": "ctrl+n" },
+        { "id": "User.closePane", "keys": "ctrl+shift+w" },
+        { "id": "User.splitPane.down", "keys": "alt+shift+minus" },
+        { "id": "User.splitPane.right", "keys": "alt+shift+plus" },
+        { "id": "User.splitPane.up", "keys": "ctrl+alt+shift+up" },
+        { "id": "User.splitPane.down", "keys": "ctrl+alt+shift+down" },
+        { "id": "User.splitPane.right", "keys": "ctrl+alt+shift+right" },
+        { "id": "User.splitPane.left", "keys": "ctrl+alt+shift+left" },
         {
             "id": "Terminal.OpenNewTab",
             "keys": "ctrl+t"
@@ -108,10 +125,7 @@
             "id": "Terminal.SwitchToLastTab",
             "keys": "ctrl+9"
         },
-        {
-            "id": null,
-            "keys": "ctrl+shift+t"
-        },
+        { "id": "User.restoreLastClosed", "keys": "ctrl+shift+t" },
         {
             "id": "User.quakeMode.F1E129A4",
             "keys": "ctrl+`"
@@ -127,12 +141,15 @@
     {
         "defaults": 
         {
-            "colorScheme": "One Half Dark",
-            "font": 
+            "background": "#0C0C0C",
+            "colorScheme": "Dracula Webber",
+            "font":
             {
                 "face": "JetBrainsMono NFM",
                 "size": 12
-            }
+            },
+            "opacity": 70,
+            "useAcrylic": true
         },
         "list": 
         [
@@ -177,7 +194,32 @@
             }
         ]
     },
-    "schemes": [],
+    "schemes":
+    [
+        {
+            "name": "Dracula Webber",
+            "background": "#22212C",
+            "black": "#22212C",
+            "blue": "#5D4FA1",
+            "brightBlack": "#7E7A94",
+            "brightBlue": "#907AFF",
+            "brightCyan": "#84FFEA",
+            "brightGreen": "#7FFF73",
+            "brightPurple": "#FF99CC",
+            "brightRed": "#FFAA99",
+            "brightWhite": "#FFFFFF",
+            "brightYellow": "#FFFF99",
+            "cursorColor": "#FFFFFF",
+            "cyan": "#5ADBC6",
+            "foreground": "#A2AECA",
+            "green": "#51D378",
+            "purple": "#FF80BF",
+            "red": "#E74A2A",
+            "selectionBackground": "#8B89FF",
+            "white": "#F8F8F2",
+            "yellow": "#FFFF80"
+        }
+    ],
     "showTabsFullscreen": false,
     "themes": [],
     "useAcrylicInTabRow": true
